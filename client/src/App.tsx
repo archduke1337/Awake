@@ -11,6 +11,10 @@ import LoginPage from "@/pages/LoginPage";
 import SignupPage from "@/pages/SignupPage";
 import ProfilePage from "@/pages/ProfilePage";
 import AccountPage from "@/pages/AccountPage";
+import AboutPage from "@/pages/AboutPage";
+import DocsPage from "@/pages/DocsPage";
+import ModelsPage from "@/pages/ModelsPage";
+import ExplorePage from "@/pages/ExplorePage";
 import NotFound from "@/pages/not-found";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -36,6 +40,10 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={HomePage} />
+      <Route path="/explore" component={ExplorePage} />
+      <Route path="/models" component={ModelsPage} />
+      <Route path="/about" component={AboutPage} />
+      <Route path="/docs" component={DocsPage} />
       <Route path="/login" component={LoginPage} />
       <Route path="/signup" component={SignupPage} />
       <Route path="/chat">
@@ -57,6 +65,8 @@ function App() {
     <ClerkProvider 
       publishableKey={PUBLISHABLE_KEY}
       afterSignOutUrl="/"
+      signInUrl="/login"
+      signUpUrl="/signup"
     >
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="light" storageKey="awake-theme">

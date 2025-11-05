@@ -22,8 +22,7 @@ export default function SignupPage() {
 
       <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-4">
         <SignUp 
-          routing="path" 
-          path="/signup"
+          routing="virtual"
           signInUrl="/login"
           afterSignUpUrl="/chat"
         />

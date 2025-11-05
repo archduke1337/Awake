@@ -1,6 +1,21 @@
+import dotenv from "dotenv";
 import express, { type Request, Response, NextFunction } from "express";
+import { clerkMiddleware } from "@clerk/express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+
+// Load environment variables from .env file
+dotenv.config();
+
+// Extend Express Request to include Clerk auth
+declare module "express" {
+  interface Request {
+    auth?: {
+      userId: string | null;
+      sessionId: string | null;
+    };
+  }
+}
 
 const app = express();
 
@@ -9,12 +24,23 @@ declare module 'http' {
     rawBody: unknown
   }
 }
+
+// Clerk authentication middleware
+app.use(
+  clerkMiddleware({
+    publishableKey: process.env.VITE_CLERK_PUBLISHABLE_KEY,
+  })
+);
+
+// Configure JSON parser with increased limit for base64 image uploads (50MB max)
 app.use(express.json({
+  limit: '50mb',
   verify: (req, _res, buf) => {
     req.rawBody = buf;
   }
 }));
-app.use(express.urlencoded({ extended: false }));
+// Configure URL-encoded parser with increased limit
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -71,11 +97,8 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
+  const host = process.env.NODE_ENV === 'development' ? 'localhost' : '0.0.0.0';
+  server.listen(port, host, () => {
+    log(`serving on http://${host}:${port}`);
   });
 })();

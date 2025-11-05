@@ -13,7 +13,7 @@ export default function LoginPage() {
               <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Sparkles className="h-6 w-6 text-primary" />
               </div>
-              <span className="text-xl font-semibold">AWAKE</span>
+              <span className="text-xl font-semibold">Awake</span>
             </a>
           </Link>
           <ThemeToggle />
@@ -22,8 +22,7 @@ export default function LoginPage() {
 
       <div className="flex items-center justify-center min-h-[calc(100vh-80px)] p-4">
         <SignIn 
-          routing="path" 
-          path="/login"
+          routing="virtual"
           signUpUrl="/signup"
           afterSignInUrl="/chat"
         />

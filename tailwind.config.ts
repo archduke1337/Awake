@@ -1,4 +1,6 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
+import typography from "@tailwindcss/typography";
 
 export default {
   darkMode: ["class"],
@@ -36,15 +38,31 @@ export default {
           foreground: "hsl(var(--secondary-foreground) / <alpha-value>)",
           border: "var(--secondary-border)",
         },
+        accent: {
+          DEFAULT: "hsl(var(--accent) / <alpha-value>)",
+          foreground: "hsl(var(--accent-foreground) / <alpha-value>)",
+          border: "var(--accent-border)",
+        },
         muted: {
           DEFAULT: "hsl(var(--muted) / <alpha-value>)",
           foreground: "hsl(var(--muted-foreground) / <alpha-value>)",
           border: "var(--muted-border)",
         },
-        accent: {
-          DEFAULT: "hsl(var(--accent) / <alpha-value>)",
-          foreground: "hsl(var(--accent-foreground) / <alpha-value>)",
-          border: "var(--accent-border)",
+        success: {
+          DEFAULT: "#10B981",
+          light: "rgba(16, 185, 129, 0.1)",
+        },
+        warning: {
+          DEFAULT: "#F59E0B",
+          light: "rgba(245, 158, 11, 0.1)",
+        },
+        error: {
+          DEFAULT: "#EF4444",
+          light: "rgba(239, 68, 68, 0.1)",
+        },
+        info: {
+          DEFAULT: "#3B82F6",
+          light: "rgba(59, 130, 246, 0.1)",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive) / <alpha-value>)",
@@ -81,6 +99,11 @@ export default {
           busy: "rgb(239 68 68)",
           offline: "rgb(156 163 175)",
         },
+        // Premium brand colors
+        indigo: "#6366F1",
+        pink: "#EC4899",
+        teal: "#14B8A6",
+        cyan: "#06B6D4",
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
@@ -96,12 +119,101 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-8px)" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(99, 102, 241, 0.4)" },
+          "50%": { boxShadow: "0 0 30px rgba(99, 102, 241, 0.8)" },
+        },
+        "slide-in-bottom": {
+          "0%": { opacity: "0", transform: "translateY(30px) scale(0.95)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
+        },
+        "slide-in-right": {
+          "0%": { opacity: "0", transform: "translateX(-20px) rotateY(-10deg)" },
+          "100%": { opacity: "1", transform: "translateX(0) rotateY(0)" },
+        },
+        "fade-in-blur": {
+          "0%": { opacity: "0", filter: "blur(8px)" },
+          "100%": { opacity: "1", filter: "blur(0)" },
+        },
+        "float-gentle": {
+          "0%, 100%": { transform: "translateY(0px) rotateZ(0deg)" },
+          "50%": { transform: "translateY(-12px) rotateZ(1deg)" },
+        },
+        "bob-slow": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "25%": { transform: "translateY(-4px)" },
+          "75%": { transform: "translateY(4px)" },
+        },
+        "shimmer-ltr": {
+          "0%": { backgroundPosition: "-1000px 0" },
+          "100%": { backgroundPosition: "1000px 0" },
+        },
+        "pulse-soft": {
+          "0%, 100%": { opacity: "1", transform: "scale(1)" },
+          "50%": { opacity: "0.9", transform: "scale(1.02)" },
+        },
+        "pulse-glow": {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(99, 102, 241, 0.4)" },
+          "50%": { boxShadow: "0 0 40px rgba(99, 102, 241, 0.8)" },
+        },
+        "spin-smooth": {
+          "from": { transform: "rotate(0deg)" },
+          "to": { transform: "rotate(360deg)" },
+        },
+        "rotate-infinite": {
+          "0%, 100%": { transform: "rotateY(0deg)" },
+          "50%": { transform: "rotateY(360deg)" },
+        },
+        "wiggle": {
+          "0%, 100%": { transform: "rotateZ(0deg)" },
+          "25%": { transform: "rotateZ(1deg)" },
+          "75%": { transform: "rotateZ(-1deg)" },
+        },
+        "bounce-smooth": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-8px)" },
+        },
+        "pop-in": {
+          "0%": { opacity: "0", transform: "scale(0.5) rotateZ(-10deg)" },
+          "100%": { opacity: "1", transform: "scale(1) rotateZ(0deg)" },
+        },
+        "unfold": {
+          "0%": { opacity: "0", transform: "scaleX(0) scaleY(0.8)" },
+          "100%": { opacity: "1", transform: "scaleX(1) scaleY(1)" },
+        },
+        "slide-in-top": {
+          "0%": { opacity: "0", transform: "translateY(-20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "gradient-shift": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "float": "float 3s ease-in-out infinite",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "slide-in-bottom": "slide-in-bottom 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "slide-in-right": "slide-in-right 0.4s ease-out",
+        "fade-in-blur": "fade-in-blur 0.5s ease-out",
+        "float-gentle": "float-gentle 4s ease-in-out infinite",
+        "bob-slow": "bob-slow 3s ease-in-out infinite",
+        "pulse-soft": "pulse-soft 2s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "spin-smooth": "spin-smooth 2s linear infinite",
+        "pop-in": "pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "wiggle": "wiggle 0.5s ease-in-out",
+        "unfold": "unfold 0.5s ease-out",
+        "slide-in-top": "slide-in-top 0.4s ease-out",
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [animate, typography],
 } satisfies Config;

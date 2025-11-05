@@ -1,17 +1,66 @@
 import { useUser } from "@clerk/clerk-react";
 import { Link } from "wouter";
-import { ArrowLeft, Sparkles, Mail, User as UserIcon, Calendar } from "lucide-react";
+import { ArrowLeft, Sparkles, Mail, User as UserIcon, Calendar, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from "@tanstack/react-query";
 import ThemeToggle from "@/components/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function AccountPage() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
+
+  // Load conversation count for stats
+  const { data: conversations = [] } = useQuery({
+    queryKey: ["conversations"],
+    queryFn: async () => {
+      const response = await fetch("/api/conversations");
+      if (!response.ok) throw new Error("Failed to load conversations");
+      return response.json();
+    },
+  });
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="border-b border-border">
+          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Sparkles className="h-6 w-6 text-primary" />
+              </div>
+              <span className="text-xl font-semibold">AWAKE</span>
+            </div>
+            <ThemeToggle />
+          </div>
+        </header>
+        <div className="container mx-auto px-4 py-8">
+          <Skeleton className="h-8 w-48 mb-4" />
+          <Skeleton className="h-4 w-96" />
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
-    return null;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Not Authenticated</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">Please sign in to view your account.</p>
+            <Link href="/login">
+              <Button className="w-full">Sign In</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -97,6 +146,24 @@ export default function AccountPage() {
                       })}
                     </p>
                   </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Usage Statistics</CardTitle>
+              <CardDescription>Your conversation activity</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-3 p-3 bg-accent/50 rounded-lg">
+                <MessageSquare className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Total Conversations</p>
+                  <p className="text-sm text-muted-foreground">
+                    {conversations.length} chat session{conversations.length !== 1 ? 's' : ''}
+                  </p>
                 </div>
               </div>
             </CardContent>
