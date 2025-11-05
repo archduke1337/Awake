@@ -22,7 +22,9 @@ export default defineConfig({
     emptyOutDir: true,
     minify: "terser",
     sourcemap: false,
+    lib: undefined, // Ensure app mode, not lib mode
     rollupOptions: {
+      input: path.resolve(__dirname, "client", "index.html"),
       output: {
         manualChunks: {
           "vendor-ui": ["react", "react-dom", "react-hook-form"],
