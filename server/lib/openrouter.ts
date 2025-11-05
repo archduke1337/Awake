@@ -39,8 +39,9 @@ export async function askOpenRouter(
     headers: {
       "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json",
-      "HTTP-Referer": process.env.REPLIT_DOMAINS 
-        ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}` 
+      // Use FRONTEND_URL if provided, otherwise fall back to localhost
+      "HTTP-Referer": process.env.FRONTEND_URL
+        ? process.env.FRONTEND_URL
         : "http://localhost:5000",
       "X-Title": "AWAKE Chatbot"
     },
