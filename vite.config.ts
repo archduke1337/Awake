@@ -16,15 +16,13 @@ export default defineConfig({
       "@assets": path.resolve(__dirname, "attached_assets"),
     },
   },
-  root: path.resolve(__dirname, "client"),
+  root: "client",
   build: {
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
     minify: "terser",
     sourcemap: false,
-    lib: undefined, // Ensure app mode, not lib mode
     rollupOptions: {
-      input: path.resolve(__dirname, "client", "index.html"),
       output: {
         manualChunks: {
           "vendor-ui": ["react", "react-dom", "react-hook-form"],
