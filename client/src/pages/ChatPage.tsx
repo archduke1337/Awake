@@ -1,7 +1,18 @@
 import { useState, useRef, useEffect } from "react";
-import { Plus } from "lucide-react";
+import { Plus, User as UserIcon, Settings } from "lucide-react";
+import { Link } from "wouter";
+import { useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import ChatMessage, { type Message } from "@/components/ChatMessage";
 import ChatInput from "@/components/ChatInput";
 import ModelSelector from "@/components/ModelSelector";
@@ -11,6 +22,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { FREE_AI_MODELS } from "@shared/models";
 
 export default function ChatPage() {
+  const { user } = useUser();
   const [selectedModel, setSelectedModel] = useState(FREE_AI_MODELS[0]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,18 +45,47 @@ export default function ChatPage() {
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
-    // todo: remove mock functionality - integrate OpenRouter API
-    setTimeout(() => {
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          modelId: selectedModel.id,
+          modelName: selectedModel.name,
+          message: content,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
       const aiMessage: Message = {
+        id: data.aiMessage.id,
+        role: "assistant",
+        content: data.aiMessage.content,
+        timestamp: new Date(data.aiMessage.createdAt),
+        modelName: selectedModel.name
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `This is a mock response from ${selectedModel.name}. In the full implementation, this will be replaced with actual AI responses from OpenRouter's free API.`,
+        content: "Sorry, I encountered an error. Please make sure the OpenRouter API key is configured correctly.",
         timestamp: new Date(),
         modelName: selectedModel.name
       };
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleNewChat = () => {
@@ -106,15 +147,44 @@ export default function ChatPage() {
         </ScrollArea>
 
         <div className="p-4 border-t border-sidebar-border">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
-              U
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-sidebar-foreground truncate">Demo User</p>
-              <p className="text-xs text-sidebar-accent-foreground">user@example.com</p>
-            </div>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="w-full justify-start p-2 h-auto hover-elevate">
+                <div className="flex items-center gap-2 w-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user?.imageUrl} alt={user?.fullName || "User"} />
+                    <AvatarFallback className="text-xs">
+                      {user?.firstName?.[0]}{user?.lastName?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="text-sm font-medium text-sidebar-foreground truncate">
+                      {user?.fullName || "User"}
+                    </p>
+                    <p className="text-xs text-sidebar-accent-foreground truncate">
+                      {user?.primaryEmailAddress?.emailAddress}
+                    </p>
+                  </div>
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <Link href="/account">
+                <DropdownMenuItem className="cursor-pointer">
+                  <UserIcon className="mr-2 h-4 w-4" />
+                  Account Overview
+                </DropdownMenuItem>
+              </Link>
+              <Link href="/profile">
+                <DropdownMenuItem className="cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Profile Settings
+                </DropdownMenuItem>
+              </Link>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
