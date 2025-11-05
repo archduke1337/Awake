@@ -3,18 +3,5 @@
   "devCommand": "npm run dev",
   "installCommand": "npm ci",
   "framework": "vite",
-  "outputDirectory": "dist/public",
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "dist/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "dist/public/index.html"
-    }
-  ]
+  "outputDirectory": "dist/public"
 }
