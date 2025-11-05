@@ -1,0 +1,57 @@
+{
+  "project": {
+    "name": "AWAKE Chatbot",
+    "description": "Full-stack AI chatbot web app built with Next.js 15, Clerk Auth, and OpenRouter free-tier models, deployed on Vercel.",
+    "version": "1.0.0",
+    "type": "frontend-only"
+  },
+  "stack": {
+    "framework": "Next.js 15 (App Router, TypeScript)",
+    "styling": ["TailwindCSS 4", "shadcn/ui", "framer-motion"],
+    "authentication": "Clerk (OAuth, Email, Social login)",
+    "ai_layer": "OpenRouter (free-tier models only)",
+    "deployment": "Vercel (Production)"
+  },
+  "environment_variables": {
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "your_clerk_publishable_key",
+    "CLERK_SECRET_KEY": "your_clerk_secret_key",
+    "OPENROUTER_API_KEY": "your_openrouter_api_key",
+    "OPENROUTER_ai_model": "meta-llama/llama-3.1-8b-instruct:free"
+  },
+  "ai_layer_configuration": {
+    "file": "lib/openrouter.ts",
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+    "model": "meta-llama/llama-3.1-8b-instruct:free",
+    "code": "export async function askOpenRouter(messages) {\n  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {\n    method: 'POST',\n    headers: {\n      'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,\n      'Content-Type': 'application/json'\n    },\n    body: JSON.stringify({\n      model: process.env.OPENROUTER_ai_model || 'meta-llama/llama-3.1-8b-instruct:free',\n      messages\n    })\n  });\n  if (!res.ok) throw new Error('OpenRouter API request failed');\n  return await res.json();\n}"
+  },
+  "authentication_configuration": {
+    "file": "app/layout.tsx",
+    "code": "import { ClerkProvider } from '@clerk/nextjs';\nimport './globals.css';\n\nexport default function RootLayout({ children }) {\n  return (\n    <ClerkProvider>\n      <html lang='en'>\n        <body className='min-h-screen bg-gray-50 text-gray-900'>{children}</body>\n      </html>\n    </ClerkProvider>\n  );\n}"
+  },
+  "chat_page": {
+    "file": "app/chat/page.tsx",
+    "code": "'use client';\n\nimport { useState } from 'react';\nimport { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';\nimport { askOpenRouter } from '@/lib/openrouter';\n\nexport default function ChatPage() {\n  const [messages, setMessages] = useState([]);\n  const [input, setInput] = useState('');\n\n  const sendMessage = async () => {\n    if (!input.trim()) return;\n\n    const userMessage = { role: 'user', content: input };\n    const updatedMessages = [...messages, userMessage];\n    setMessages(updatedMessages);\n    setInput('');\n\n    const res = await askOpenRouter(updatedMessages);\n    const reply = res.choices?.[0]?.message?.content || 'No response';\n    setMessages([...updatedMessages, { role: 'assistant', content: reply }]);\n  };\n\n  return (\n    <main className='flex flex-col items-center p-6 max-w-2xl mx-auto'>\n      <SignedOut>\n        <SignInButton mode='modal'>\n          <button className='px-4 py-2 bg-indigo-600 text-white rounded-lg'>Sign in to chat</button>\n        </SignInButton>\n      </SignedOut>\n\n      <SignedIn>\n        <div className='w-full flex justify-between items-center mb-4'>\n          <h1 className='text-2xl font-semibold'>AWAKE Chatbot</h1>\n          <UserButton />\n        </div>\n\n        <div className='w-full border rounded-lg p-4 bg-white shadow-sm min-h-[400px] flex flex-col space-y-2 overflow-y-auto'>\n          {messages.map((m, i) => (\n            <div key={i} className={m.role === 'user' ? 'text-blue-600 self-end' : 'text-gray-800'}>\n              <strong>{m.role === 'user' ? 'You' : 'AI'}:</strong> {m.content}\n            </div>\n          ))}\n        </div>\n\n        <div className='w-full mt-4 flex'>\n          <input\n            className='flex-grow border rounded-l-lg p-2'\n            value={input}\n            onChange={(e) => setInput(e.target.value)}\n            placeholder='Type your message...'\n          />\n          <button onClick={sendMessage} className='px-4 py-2 bg-indigo-600 text-white rounded-r-lg'>Send</button>\n        </div>\n      </SignedIn>\n    </main>\n  );\n}"
+  },
+  "deployment": {
+    "platform": "Vercel",
+    "workflow": [
+      "1. Connect GitHub repository to Vercel.",
+      "2. Allow Vercel to auto-detect Next.js 15 configuration.",
+      "3. Add environment variables in Vercel Dashboard (Settings → Environment Variables).",
+      "4. Run production build and deploy automatically."
+    ],
+    "expected_url": "https://awake-chatbot.vercel.app"
+  },
+  "validation_criteria": {
+    "ai_model": "meta-llama/llama-3.1-8b-instruct:free",
+    "endpoint": "https://openrouter.ai/api/v1/chat/completions",
+    "billing": "free-tier ($0)",
+    "auth_status": "Clerk login and session verified",
+    "chat_functionality": "Chat UI sends and receives messages via OpenRouter free model only"
+  },
+  "notes": {
+    "security": "Never expose API keys publicly; always use Vercel Environment Variables.",
+    "restrictions": "No backend or paid OpenRouter models may be used.",
+    "completion": "Deployment complete when chatbot runs live, authenticated, and responds via free-tier AI model."
+  }
+}
