@@ -1,0 +1,57 @@
+# Dependencies (Vercel installs from package.json)
+node_modules/
+.npm/
+
+# Development files
+.git/
+.gitignore
+.env.local
+.env.*.local
+.DS_Store
+Thumbs.db
+
+# Build artifacts (will be regenerated)
+dist/
+.next/
+out/
+build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.editorconfig
+
+# Testing and CI
+coverage/
+.nyc_output/
+*.lcov
+.github/
+.gitlab-ci.yml
+.circleci/
+azure-pipelines.yml
+
+# Documentation
+*.md
+LICENSE
+docs/
+
+# Config files not needed at runtime
+vite.config.ts
+tsconfig.json
+tailwind.config.ts
+postcss.config.js
+drizzle.config.ts
+components.json
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+test-api.ps1
+
+# Attached assets
+attached_assets/
