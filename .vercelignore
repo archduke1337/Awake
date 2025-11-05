@@ -38,9 +38,9 @@ azure-pipelines.yml
 LICENSE
 docs/
 
-# Config files not needed at runtime
-vite.config.ts
-tsconfig.json
+# Config files not needed at runtime (keep build configs!)
+# vite.config.ts - NEEDED for build
+# tsconfig.json - NEEDED for build
 tailwind.config.ts
 postcss.config.js
 drizzle.config.ts
